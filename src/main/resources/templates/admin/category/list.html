@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="~{admin/layout-admin.html}">
+<head>
+	<meta charset="UTF-8">
+	<title>Categories</title>
+	
+</head>
+<body>
+	<section class="row" layout:fragment="content">
+		<a th:href="@{/admin/categories/add}">Add Category</a>
+		
+		<!-- Display message if it exists -->
+		<span th:if="${message != null}" th:text="${message}"></span>
+		
+		<!-- Search form -->
+		<form th:action="@{/admin/categories/searchpaginated}" method="get">
+		    <input type="text" id="name" name="name" placeholder="Nhập từ khóa để tìm" />
+		    <button type="submit">Search</button>
+		</form>
+		
+		<div class="row" th:if="${!hasContent}">No Category</div>
+		
+		<div class="row" th:if="${hasContent}">
+		    <table border="1">
+		        <tr>
+		            <th>STT</th>
+		            <th>Images</th>
+		            <th>Category Name</th>
+		            <th>Status</th>
+		            <th>Action</th>
+		        </tr>
+		        <!-- Loop through categoryPage content -->
+		        <tr th:each="cate, stt : ${Content}">
+		            <td th:text="${stt.index + 1}"></td>
+		            <td th:text="${cate.images}"></td>
+		            <td th:text="${cate.name}"></td>
+		            <td th:text="${cate.status}"></td>
+		            <td>
+		                <a th:href="@{/admin/categories/edit/{id}(id=${cate.id})}">Edit</a>
+		                <a th:href="@{/admin/categories/delete/{id}(id=${cate.id})}">Delete</a>
+		            </td>
+		        </tr>
+		    </table>
+		</div>
+		
+		<form method="get">
+		    <label>Page size:</label>
+		    <select name="size" id="size" onchange="this.form.submit()">
+		        <option th:each="size : ${Array}"
+		                th:value="${size}" 
+		                th:text="${size}"
+		                th:selected="${size == categoryPage.size}">
+		        </option>
+		    </select>
+		</form>
+		
+		<div th:if="${totalPages > 0}">
+		    <ul>
+		        <li th:each="pageNumber : ${pageNumbers}"
+		            th:class="${pageNumber == categoryPage.number + 1 ? 'page-item active' : 'page-item'}">
+		            <a th:href="@{/admin/categories/searchpaginated(name=${name}, size=${categoryPage.size}, page=${pageNumber})}" 
+		               th:text="${pageNumber}"></a>
+		        </li>
+		    </ul>
+		</div>
+		
+	</section>
+</body>
+</html>
